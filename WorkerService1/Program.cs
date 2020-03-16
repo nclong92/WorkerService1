@@ -57,6 +57,7 @@ namespace WorkerService1
             ApiSettings.WebApiHostUrl = configuration["WebApiHostUrl"];
             ApiSettings.OpenWeatherApiUri = configuration["OpenWeatherApiUri"];
             ApiSettings.OpenWeatherApiKey = configuration["OpenWeatherApiKey"];
+            ApiSettings.FiveDaysWeatherForecastApiHostUrl = configuration["FiveDaysWeatherForecastApiHostUrl"];
 
             var connectionStrings = configuration.GetConnectionString("AppContext");
             serviceCollection.AddDbContext<AppDbContext>(options => {

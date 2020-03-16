@@ -7,6 +7,7 @@ namespace WorkerService1.Code
     public class ApiSettings
     {
         public static string WebApiHostUrl { get; set; }
+        public static string FiveDaysWeatherForecastApiHostUrl { get; set; }
         public static string OpenWeatherApiUri { get; set; }
         public static string OpenWeatherApiKey { get; set; }
     }

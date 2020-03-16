@@ -8,5 +8,6 @@ namespace WorkerService1.Interfaces
     public interface IHttpClientGetOpenWeatherApi
     {
         Task<string> GetOpenWeatherApi(string city);
+        Task<string> GetFiveDaysWeatherApi(string city);
     }
 }

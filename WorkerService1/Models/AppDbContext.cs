@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using WorkerService1.Models.Weathers;
+using WorkerService2.Models.Weathers;
 
 namespace WorkerService1.Models
 {
@@ -14,6 +15,7 @@ namespace WorkerService1.Models
         }
 
         public DbSet<WeatherData> Weathers { get; set; }
+        public DbSet<FiveDaysWeatherData> FiveDaysWeathers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -21,6 +23,12 @@ namespace WorkerService1.Models
             {
                 entity.HasKey(e => e.Id);
             });
+
+            modelBuilder.Entity<FiveDaysWeatherData>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+            });
+
         }
     }
 }

@@ -42,9 +42,11 @@ namespace WorkerService1
                     var _httpClientGetOpenWeatherApiService = serviceScope.ServiceProvider.GetRequiredService<IHttpClientGetOpenWeatherApi>();
 
                     var r = await _httpClientGetOpenWeatherApiService.GetOpenWeatherApi("Hanoi");
+
+                    var r5 = await _httpClientGetOpenWeatherApiService.GetFiveDaysWeatherApi("Hanoi");
                 }
 
-                await Task.Delay(1800000, stoppingToken);
+                await Task.Delay(3600000, stoppingToken);
             }
         }
 
