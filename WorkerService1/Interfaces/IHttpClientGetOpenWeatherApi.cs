@@ -9,5 +9,6 @@ namespace WorkerService1.Interfaces
     {
         Task<string> GetOpenWeatherApi(string city);
         Task<string> GetFiveDaysWeatherApi(string city);
+        Task<string> GetDarkSkyWeatherApi(string latitude, string longitude);
     }
 }

@@ -16,6 +16,8 @@ namespace WorkerService1.Models
 
         public DbSet<WeatherData> Weathers { get; set; }
         public DbSet<FiveDaysWeatherData> FiveDaysWeathers { get; set; }
+        public DbSet<DarkSkyWeather> DarkSkyWeathers { get; set; }
+        public DbSet<DarkSkyDailyWeather> DarkSkyDailyWeathers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -29,6 +31,15 @@ namespace WorkerService1.Models
                 entity.HasKey(e => e.Id);
             });
 
+            modelBuilder.Entity<DarkSkyWeather>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+            });
+
+            modelBuilder.Entity<DarkSkyDailyWeather>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+            });
         }
     }
 }

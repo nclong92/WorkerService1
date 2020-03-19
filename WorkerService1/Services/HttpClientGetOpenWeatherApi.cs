@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ using WorkerService1.Code;
 using WorkerService1.Interfaces;
 using WorkerService1.Models;
 using WorkerService1.Models.Weathers;
+using WorkerService2.Code.Helpers;
 using WorkerService2.Models;
 using WorkerService2.Models.Weathers;
 
@@ -126,7 +128,7 @@ namespace WorkerService1.Services
                     {
                         var dtUTC = "";
                         dtUTC = item.dt;
-                        
+
                         var dt_txtStr = item.dt_txt;
 
                         var fiveDaysWeatherData = _context.FiveDaysWeathers.FirstOrDefault(m => m.dt == dtUTC && m.name == cityName && m.lon == lonStr && m.lat == latStr && m.dt_txt == dt_txtStr);
@@ -191,6 +193,136 @@ namespace WorkerService1.Services
             }
 
             return "Success";
+        }
+
+        public async Task<string> GetDarkSkyWeatherApi(string latitude = "21.028511", string longitude = "105.804817")
+        {
+            var username = "Window Service";
+
+            var apiKey = ApiSettings.DarkSkyApiKey;
+            var hostUri = ApiSettings.DarkSkyApiHostUrl;
+
+            var uriString = $"{hostUri}forecast/{apiKey}/{latitude},{longitude}?units=si&lang=vi";
+
+            var responseString = await HttpClientHelpers.GetHttpClientHelper(uriString);
+
+            if (responseString == null)
+            {
+                _logger.LogError("Error: GetDarkSkyWeatherApi cannot get api result from DarkSky");
+            }
+
+            var apiResult = JsonConvert.DeserializeObject<DarkSkyWeatherApiResult>(responseString);
+
+            var latitudeResult = apiResult.latitude;
+            var longitudeResult = apiResult.longitude;
+            var timezoneResult = apiResult.timezone;
+
+            // DarkSky Current Weathers
+            await AddOrUpdateDarkSkyWeather(TodayType.Currently, apiResult.currently.time, latitudeResult, longitudeResult, timezoneResult,
+                apiResult.currently.summary, apiResult.currently.icon, apiResult.currently.temperature, apiResult.currently.apparentTemperature, username);
+
+            // DarkSky Hourly Weathers
+            var hourlyDatas = apiResult.hourly.data;
+            foreach (var hourlyData in hourlyDatas)
+            {
+                await AddOrUpdateDarkSkyWeather(TodayType.Hourly, hourlyData.time, latitudeResult, longitudeResult, timezoneResult,
+                hourlyData.summary, hourlyData.icon, hourlyData.temperature, hourlyData.apparentTemperature, username);
+            }
+
+            // DarkSky Daily Weathers
+            var dailyData = apiResult.daily.data;
+            foreach (var item in dailyData)
+            {
+                var darkSkyDailyWeather = await _context.DarkSkyDailyWeathers
+                                                .FirstOrDefaultAsync(m => m.latitude == latitudeResult && m.longitude == longitudeResult
+                                                                    && m.time == item.time);
+
+                if (darkSkyDailyWeather == null)
+                {
+                    darkSkyDailyWeather = new DarkSkyDailyWeather()
+                    {
+                        latitude = latitudeResult,
+                        longitude = longitudeResult, 
+                        timezone = timezoneResult,
+                        
+                        time = item.time,
+                        summary = item.summary,
+                        icon = item.icon,
+                        temperatureMax = item.temperatureMax,
+                        temperatureMin = item.temperatureMin,
+
+                        DateCreated = DateTime.Now,
+                        DateModified = DateTime.Now,
+                        UserCreated = username,
+                        UserModified = username
+                    };
+
+                    await _context.DarkSkyDailyWeathers.AddAsync(darkSkyDailyWeather);
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    darkSkyDailyWeather.time = item.time;
+                    darkSkyDailyWeather.summary = item.summary;
+                    darkSkyDailyWeather.icon = item.icon;
+                    darkSkyDailyWeather.temperatureMax = item.temperatureMax;
+                    darkSkyDailyWeather.temperatureMin = item.temperatureMin;
+
+                    darkSkyDailyWeather.DateModified = DateTime.Now;
+                    darkSkyDailyWeather.UserModified = username;
+                }
+            }
+
+            return "Success";
+        }
+
+
+        private async Task AddOrUpdateDarkSkyWeather(TodayType type, long time, double latitude, double longitude, string timezone, string summary,
+                                                    string icon, double temperature, double apparentTemperature, string username)
+        {
+            var darkSkyWeather = await _context.DarkSkyWeathers.FirstOrDefaultAsync(m => m.Type == type
+                                                                        && m.time == time
+                                                                        && m.latitude == latitude
+                                                                        && m.longitude == longitude);
+
+            if (darkSkyWeather == null)
+            {
+                darkSkyWeather = new DarkSkyWeather()
+                {
+                    latitude = latitude,
+                    longitude = longitude,
+                    timezone = timezone,
+                    time = time,
+                    summary = summary,
+                    icon = icon,
+                    temperature = temperature,
+                    apparentTemperature = apparentTemperature,
+
+                    DateCreated = DateTime.Now,
+                    DateModified = DateTime.Now,
+                    UserCreated = username,
+                    UserModified = username
+                };
+
+                await _context.AddAsync(darkSkyWeather);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation($"GetDarkSkyWeatherApi {type} add new DarkSkyWeather {darkSkyWeather.Id}");
+            }
+            else
+            {
+                darkSkyWeather.summary = summary;
+                darkSkyWeather.icon = icon;
+                darkSkyWeather.temperature = temperature;
+                darkSkyWeather.apparentTemperature = apparentTemperature;
+
+                darkSkyWeather.DateModified = DateTime.Now;
+                darkSkyWeather.UserModified = username;
+
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation($"GetDarkSkyWeatherApi {type} update DarkSkyWeather {darkSkyWeather.Id}");
+            }
         }
     }
 }

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WorkerService1.Models;
 
 namespace WorkerService1.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200319031621_addDarkSkyToDb")]
+    partial class addDarkSkyToDb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -140,12 +142,6 @@ namespace WorkerService1.Migrations
                     b.Property<string>("icon")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("latitude")
-                        .HasColumnType("float");
-
-                    b.Property<double>("longitude")
-                        .HasColumnType("float");
-
                     b.Property<double>("moonPhase")
                         .HasColumnType("float");
 
@@ -248,8 +244,8 @@ namespace WorkerService1.Migrations
                     b.Property<DateTime>("DateModified")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("TimeDisplay")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("UserCreated")
                         .HasColumnType("nvarchar(max)");
@@ -272,11 +268,11 @@ namespace WorkerService1.Migrations
                     b.Property<string>("icon")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("latitude")
-                        .HasColumnType("float");
+                    b.Property<string>("latitude")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("longitude")
-                        .HasColumnType("float");
+                    b.Property<string>("longitude")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("ozone")
                         .HasColumnType("float");

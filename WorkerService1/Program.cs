@@ -59,6 +59,9 @@ namespace WorkerService1
             ApiSettings.OpenWeatherApiKey = configuration["OpenWeatherApiKey"];
             ApiSettings.FiveDaysWeatherForecastApiHostUrl = configuration["FiveDaysWeatherForecastApiHostUrl"];
 
+            ApiSettings.DarkSkyApiHostUrl = configuration["DarkSkyApiHostUrl"];
+            ApiSettings.DarkSkyApiKey = configuration["DarkSkyApiKey"];
+
             var connectionStrings = configuration.GetConnectionString("AppContext");
             serviceCollection.AddDbContext<AppDbContext>(options => {
                 options.UseSqlServer(connectionStrings,
