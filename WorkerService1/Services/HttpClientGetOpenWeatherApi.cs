@@ -254,7 +254,8 @@ namespace WorkerService1.Services
                         DateCreated = DateTime.Now,
                         DateModified = DateTime.Now,
                         UserCreated = username,
-                        UserModified = username
+                        UserModified = username,
+                        
                     };
 
                     await _context.DarkSkyDailyWeathers.AddAsync(darkSkyDailyWeather);
@@ -301,7 +302,9 @@ namespace WorkerService1.Services
                     DateCreated = DateTime.Now,
                     DateModified = DateTime.Now,
                     UserCreated = username,
-                    UserModified = username
+                    UserModified = username,
+
+                    Type = type
                 };
 
                 await _context.AddAsync(darkSkyWeather);
