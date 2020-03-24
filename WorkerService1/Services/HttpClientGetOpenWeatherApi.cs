@@ -199,6 +199,21 @@ namespace WorkerService1.Services
         {
             var username = "Window Service";
 
+            try
+            {
+                username = Environment.MachineName;
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogError($"GetDarkSkyWeatherApi -> Error: Cannot get Computer Name -> {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            _logger.LogInformation($"GetDarkSkyWeatherApi username: {username}");
+
             var apiKey = ApiSettings.DarkSkyApiKey;
             var hostUri = ApiSettings.DarkSkyApiHostUrl;
 
@@ -242,9 +257,9 @@ namespace WorkerService1.Services
                     darkSkyDailyWeather = new DarkSkyDailyWeather()
                     {
                         latitude = latitudeResult,
-                        longitude = longitudeResult, 
+                        longitude = longitudeResult,
                         timezone = timezoneResult,
-                        
+
                         time = item.time,
                         summary = item.summary,
                         icon = item.icon,
@@ -255,7 +270,7 @@ namespace WorkerService1.Services
                         DateModified = DateTime.Now,
                         UserCreated = username,
                         UserModified = username,
-                        
+
                     };
 
                     await _context.DarkSkyDailyWeathers.AddAsync(darkSkyDailyWeather);
