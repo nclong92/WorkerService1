@@ -38,7 +38,7 @@ namespace WorkerService2.Code.Helpers
                 }
                 catch (Exception ex)
                 {
-                    
+                    return $"Error: GetHttpClientHelper --> {ex.Message}";
                 }
             }
 

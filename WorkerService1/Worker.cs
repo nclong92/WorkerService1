@@ -48,7 +48,7 @@ namespace WorkerService1
                     var getDarkSkyApiResult = await _httpClientGetOpenWeatherApiService.GetDarkSkyWeatherApi("21.028511", "105.804817");
                 }
 
-                await Task.Delay(1800000, stoppingToken);
+                await Task.Delay(3600000, stoppingToken);
             }
         }
 

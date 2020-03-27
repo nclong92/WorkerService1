@@ -205,11 +205,11 @@ namespace WorkerService1.Services
             }
             catch (InvalidOperationException ex)
             {
-                _logger.LogError($"GetDarkSkyWeatherApi -> Error: Cannot get Computer Name -> {ex.Message}");
+                _logger.LogError($"GetDarkSkyWeatherApi -> InvalidOperationException -> Error: Cannot get Computer Name -> {ex.Message}");
             }
             catch (Exception ex)
             {
-
+                _logger.LogError($"GetDarkSkyWeatherApi -> Exception -> Error: Cannot get Computer Name -> {ex.Message}");
             }
 
             _logger.LogInformation($"GetDarkSkyWeatherApi username: {username}");
@@ -224,6 +224,13 @@ namespace WorkerService1.Services
             if (responseString == null)
             {
                 _logger.LogError("Error: GetDarkSkyWeatherApi cannot get api result from DarkSky");
+                return "False";
+            }
+
+            if (responseString.Contains("Error"))
+            {
+                _logger.LogError($"Error: GetDarkSkyWeatherApi {responseString}");
+                return "False";
             }
 
             var apiResult = JsonConvert.DeserializeObject<DarkSkyWeatherApiResult>(responseString);
